@@ -26,7 +26,12 @@ extension UDACITYClient {
             
             /* 3. Send the desired value(s) to completion handler */
             if let error = error {
-                completionHandler(sessionCreated: false, error: "Failed to creaste session")
+                if error.code == -1001 { // request timed out
+                    completionHandler(sessionCreated: false, error: "TimedOut")
+        
+                } else {
+                    completionHandler(sessionCreated: false, error: "PostFailed")
+                }
             } else {
                 
                 if let sessionResult = result[UDACITYClient.JSONResponseKeys.Session] as? [String:AnyObject] {
@@ -35,8 +40,17 @@ extension UDACITYClient {
                         self.sessionID = sessionID
                         
                     } else {
-                        completionHandler(sessionCreated: false, error: "Failed to create session")
+                        completionHandler(sessionCreated: false, error: "Unable to get a session ID")
                     }
+                } else {
+                    if let statusCode = result[JSONResponseKeys.Status] as? Int {
+                        if statusCode == 403 || statusCode == 400 { //  Account not found or invalid credentials
+                            completionHandler(sessionCreated: false, error: "AccountNotFoundOrInvalidCredentials")
+                        } else {
+                            completionHandler(sessionCreated: false, error: "Unknown status code")
+                        }
+                    }
+                
                 }
             }
             
@@ -59,7 +73,13 @@ extension UDACITYClient {
         taskForPOSTMethod(UDACITYClient.Methods.Session, jsonBody: jsonBody) { result, error in
             /* 3. Send the desired value(s) to completion handler */
             if let error = error {
-                completionHandler(sessionCreated: false, error: "failed login : createSessionWithFacebook - taskForPOSTMethod")
+                if error.code == -1001 { // request timed out
+                    completionHandler(sessionCreated: false, error: "TimedOut")
+                    
+                } else {
+                    completionHandler(sessionCreated: false, error: "PostFailed")
+                }
+                
             } else {
                 if let sessionResult = result[UDACITYClient.JSONResponseKeys.Session] as? [String:AnyObject] {
                     if let sessionID = sessionResult[JSONResponseKeys.SessionID] as? String {

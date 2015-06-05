@@ -49,6 +49,7 @@ class UDACITYClient : NSObject {
             /* 5/6 Parse the data and use the data (happens in the complention handler) */
             if let error = downloadError {
                 println("unable to download data taskForPostMethod")
+                println(error)
                 completionHandler(result: nil, error: error)
             } else {
                 let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5 )) // Subset response data!

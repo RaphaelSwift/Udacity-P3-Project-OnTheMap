@@ -14,6 +14,7 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     
     //MARK: - Lifecycle
@@ -24,27 +25,22 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         
         // Check if the user is already logged in, if yes, complete login to Udacity
         if FBSDKAccessToken.currentAccessToken() != nil  {
-            let token = FBSDKAccessToken.currentAccessToken().tokenString
-            UDACITYClient.sharedInstance().createSessionWithFacebook(token) { success, error in
-                if success {
-                    println("successfully logged to Udacity")
-                    self.completeLogin()
-                } else {
-                    println(error)
-                }
-                
-            }
+            loginToUdacityWithFacebookSessionID()
 
-        } else {
-                // Create the Facebook Login button view and position it at bottom of the screen
-                let loginView : FBSDKLoginButton = FBSDKLoginButton()
-                self.view.addSubview(loginView)
-                loginView.center = CGPointMake(self.view.center.x, self.view.frame.height - 40)
-                loginView.delegate = self
         }
-
+        
+        // Create the Facebook Login button view and position it at bottom of the screen
+        let loginView : FBSDKLoginButton = FBSDKLoginButton()
+        self.view.addSubview(loginView)
+        loginView.center = CGPointMake(self.view.center.x, self.view.frame.height - 40)
+        loginView.delegate = self
+        
+        // By default hides the activity indicator when it is stopped.
+        self.activityIndicator.hidesWhenStopped = true
 
     }
+    
+
     
     
     //MARK: - Actions
@@ -52,28 +48,75 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     @IBAction func loginWithUdacityTouchUpInside() {
         
-        UDACITYClient.sharedInstance().createSessionWithUdacity(emailTextField.text, password: passwordTextField.text) { success, error in
+        self.activityIndicator.startAnimating()
+        
+        loginToUdacityWithUdacityCredentials()
+
+    }
+
+    @IBAction func signUpToUdacityTouchUpInside() {
+ 
+    }
+
+    
+    //MARK: - LoginViewController
+    
+    func loginToUdacityWithUdacityCredentials() {
+        
+        UDACITYClient.sharedInstance().createSessionWithUdacity(self.emailTextField.text, password: self.passwordTextField.text) { success, error in
             if let error = error {
+                if error == "TimedOut"
+                {
+                    self.displayAlertRequestTimedOut()
+                    
+                } else if error == "AccountNotFoundOrInvalidCredentials" {
+                    
+                    self.displayAlertAccountNotFoundOrInvalidCredentials()
+                    
+                } else if error == "PostFailed" {
+                    self.displayAlertPostFailed(false)
+                }
+                
                 println(error)
             } else {
                 if success {
                     println("successfully logged to Udacity")
                     self.completeLogin()
-                } else {
-                    println(error)
                 }
             }
             
         }
         
-
     }
-
-    @IBAction func signUpToUdacityTouchUpInside() {
-    }
-
     
-    //MARK: - LoginViewController
+    
+    func loginToUdacityWithFacebookSessionID () {
+        
+        self.activityIndicator.startAnimating()
+        
+        let token = FBSDKAccessToken.currentAccessToken().tokenString
+        UDACITYClient.sharedInstance().createSessionWithFacebook(token) { success, error in
+            if success {
+                println("successfully logged to Facebook")
+                self.completeLogin()
+            } else {
+                if let error = error {
+                    if error == "TimedOut"
+                    {
+                        self.displayAlertRequestTimedOut()
+                        
+                    } else if error == "PostFailed" {
+                        self.displayAlertPostFailed(true)
+                    }
+                    
+                }
+                
+                
+            }
+            
+        }
+    }
+    
     
     func completeLogin() {
         dispatch_async(dispatch_get_main_queue()) {
@@ -84,6 +127,80 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     }
     
     
+    //MARK: - UIAlertController
+    
+    // Display an alert if the request times out
+    func displayAlertRequestTimedOut() {
+        
+        dispatch_async(dispatch_get_main_queue()) {
+    
+    let alertController = UIAlertController(title: "Login Failed", message: "Request timed out, please check your internet connection and retry ", preferredStyle: UIAlertControllerStyle.Alert)
+        let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) { action in
+            self.activityIndicator.stopAnimating()
+            
+        }
+        
+        alertController.addAction(action)
+        self.presentViewController(alertController, animated: true, completion: nil)
+            
+        }
+    }
+    
+    
+    // Display an alert if the account is not found or the if credentials are invalid
+    func displayAlertAccountNotFoundOrInvalidCredentials() {
+        
+        dispatch_async(dispatch_get_main_queue()) {
+        
+    let alertController = UIAlertController(title: "Login Failed", message: "Account not found or invalid credentials", preferredStyle: UIAlertControllerStyle.Alert)
+            
+        let action = UIAlertAction(title: "OK", style: UIAlertActionStyle.Default) { action in
+            self.activityIndicator.stopAnimating()
+            self.emailTextField.text = ""
+            self.passwordTextField.text = ""
+            
+        }
+        
+        alertController.addAction(action)
+        self.presentViewController(alertController, animated: true, completion: nil)
+    
+        }
+    }
+    
+    // Display an alert if the post fails for a reason which is not due to internet connection and allows the user to retry
+    
+    func displayAlertPostFailed(FacebookAuthentification: Bool) {
+        
+        dispatch_async(dispatch_get_main_queue()) {
+            
+    let alertController = UIAlertController(title: "Server Failure", message: "Could not connect to Udacity server ", preferredStyle: UIAlertControllerStyle.ActionSheet)
+            
+            let actionCancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) { action in
+
+                self.activityIndicator.stopAnimating()
+                
+            }
+            
+            let actionRetry = UIAlertAction(title: "Retry", style: UIAlertActionStyle.Default) { action in
+                
+                if FacebookAuthentification {
+                    self.loginToUdacityWithFacebookSessionID()
+                } else {
+                    self.loginToUdacityWithUdacityCredentials()
+                }
+                
+                }
+            
+        alertController.addAction(actionCancel)
+        alertController.addAction(actionRetry)
+            
+        self.presentViewController(alertController, animated: true, completion: nil)
+            
+            
+        }
+        
+    }
+    
     //MARK: - Facebook FBSDKLoginButtonDelegate
     
     
@@ -93,26 +210,19 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
             println("Could not login to Facebook , : \(error.localizedDescription)")
             
         } else if result.isCancelled {
-            //handle cancellation
-            
-        } else {
-            //TODO: create session with facebook, complete login
-                let accessToken = FBSDKAccessToken.currentAccessToken().tokenString
-            UDACITYClient.sharedInstance().createSessionWithFacebook(accessToken) { success, error in
-                if success {
-                    println("successfully logged to Udacity")
-                    self.completeLogin()
-                } else {
-                    println(error)
-                }
-                
-            }
+            // Handle cancellations
+        }
+        
+        else {
+            //TODO: Create session with facebook sesion ID, complete login
+
+            loginToUdacityWithFacebookSessionID()
 
         }
     }
     
     func loginButtonDidLogOut(loginButton: FBSDKLoginButton!) {
-        println("logged out")
+        self.activityIndicator.stopAnimating()
     }
 }
 

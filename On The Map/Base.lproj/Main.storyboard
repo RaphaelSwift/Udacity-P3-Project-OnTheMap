@@ -17,6 +17,15 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ydy-ku-8ok">
+                                <rect key="frame" x="16" y="285" width="568" height="30"/>
+                                <state key="normal" title="Login">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="loginWithUdacityTouchUpInside" destination="vXZ-lx-hvc" eventType="touchUpInside" id="O2x-1q-Cvb"/>
+                                </connections>
+                            </button>
                             <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="YOg-Ab-QIz">
                                 <rect key="frame" x="16" y="247" width="568" height="30"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -27,6 +36,15 @@
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits"/>
                             </textField>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Login to Udacity" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r5M-9h-SAJ">
+                                <rect key="frame" x="16" y="180" width="568" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="VbN-Nd-dat">
+                                <rect key="frame" x="290" y="252" width="20" height="20"/>
+                            </activityIndicatorView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kph-45-hPI">
                                 <rect key="frame" x="16" y="323" width="568" height="30"/>
                                 <state key="normal" title="Don't have an account ? Sign Up">
@@ -34,21 +52,6 @@
                                 </state>
                                 <connections>
                                     <action selector="signUpToUdacityTouchUpInside" destination="vXZ-lx-hvc" eventType="touchUpInside" id="ecz-8R-ge4"/>
-                                </connections>
-                            </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Login to Udacity" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="r5M-9h-SAJ">
-                                <rect key="frame" x="16" y="180" width="568" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ydy-ku-8ok">
-                                <rect key="frame" x="16" y="285" width="568" height="30"/>
-                                <state key="normal" title="Login">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="loginWithUdacityTouchUpInside" destination="vXZ-lx-hvc" eventType="touchUpInside" id="O2x-1q-Cvb"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -61,9 +64,11 @@
                             <constraint firstItem="r5M-9h-SAJ" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="D2R-GA-ddw"/>
                             <constraint firstAttribute="centerX" secondItem="Ydy-ku-8ok" secondAttribute="centerX" id="J1o-Yz-Hk4"/>
                             <constraint firstItem="YOg-Ab-QIz" firstAttribute="top" secondItem="yLk-D5-eOC" secondAttribute="bottom" constant="8" id="OtV-yR-G5Y"/>
+                            <constraint firstAttribute="centerY" secondItem="VbN-Nd-dat" secondAttribute="centerY" constant="38" id="Qir-IX-kdM"/>
                             <constraint firstAttribute="centerX" secondItem="yLk-D5-eOC" secondAttribute="centerX" constant="-0.5" id="RWt-RT-boG"/>
                             <constraint firstItem="kph-45-hPI" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="S6U-gJ-01N"/>
                             <constraint firstItem="r5M-9h-SAJ" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="TFp-qo-z8B"/>
+                            <constraint firstAttribute="centerX" secondItem="VbN-Nd-dat" secondAttribute="centerX" id="UJl-DZ-oht"/>
                             <constraint firstItem="yLk-D5-eOC" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="a2n-dI-VpD"/>
                             <constraint firstItem="kph-45-hPI" firstAttribute="trailing" secondItem="kh9-bI-dsS" secondAttribute="trailingMargin" id="hX9-7w-O65"/>
                             <constraint firstAttribute="centerX" secondItem="kph-45-hPI" secondAttribute="centerX" id="mg0-se-vAW"/>
@@ -83,6 +88,7 @@
                         </variation>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="VbN-Nd-dat" id="uxU-Sl-CZn"/>
                         <outlet property="emailTextField" destination="yLk-D5-eOC" id="UQG-9q-WuT"/>
                         <outlet property="passwordTextField" destination="YOg-Ab-QIz" id="56f-qg-avX"/>
                     </connections>

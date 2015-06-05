@@ -42,10 +42,11 @@ extension UDACITYClient {
     //MARK: - JSON Response Keys
     
     struct JSONResponseKeys {
-        
+        static let Status = "status"
         static let Session = "session"
         static let SessionID = "id"
 
     }
+    
     
 }

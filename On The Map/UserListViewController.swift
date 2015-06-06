@@ -8,28 +8,61 @@
 
 import UIKit
 
-class UserListViewController: UIViewController {
+class UserListViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    
+    //MARK: Properties
+    
+    var studentsInformation: [PARSEStudentInformation] = [PARSEStudentInformation]()
+    
+    @IBOutlet weak var studentsTableView: UITableView!
+    
+    //MARK: Lifecyle
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
 
-        // Do any additional setup after loading the view.
-    }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(true)
+        
+        PARSEClient.SharedInstance().getStudentsInformation() { studentsInformation, error in
+            if let studentsInformation = studentsInformation {
+                self.studentsInformation = studentsInformation
+                
+                dispatch_async(dispatch_get_main_queue()) {
+                    
+                    //Reload the tableview
+                    self.studentsTableView.reloadData()
+                }
+            }
+        }
     }
-    */
+    
+    
+    //MARK: UITableViewDataSource , UITableViewDelegate
+    
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return studentsInformation.count
+    }
+
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        
+        /* Get cell type */
+        let student = studentsInformation[indexPath.row]
+        
+        let cell = studentsTableView.dequeueReusableCellWithIdentifier("StudentListTableViewCell") as! UITableViewCell
+
+        
+        /* Set cell tdefaults */
+        cell.textLabel?.text = " \(student.firstName!) \(student.lastName!)"
+        cell.imageView?.image = UIImage(named: "Pin")
+        
+        return cell
+        
+    }
 
 }

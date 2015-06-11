@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F6DD77E01B26D1C100C9777D /* InformationPostingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6DD77DF1B26D1C100C9777D /* InformationPostingViewController.swift */; };
 		F6E52BE51B203B80000356BB /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6E52BE41B203B80000356BB /* FBSDKCoreKit.framework */; };
 		F6E52BE71B203B90000356BB /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6E52BE61B203B90000356BB /* FBSDKLoginKit.framework */; };
 		F6E52BEB1B203E93000356BB /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6E52BEA1B203E93000356BB /* Bolts.framework */; };
@@ -38,6 +39,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F6DD77DF1B26D1C100C9777D /* InformationPostingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InformationPostingViewController.swift; sourceTree = "<group>"; };
 		F6E52BE41B203B80000356BB /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		F6E52BE61B203B90000356BB /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKLoginKit.framework; sourceTree = "<group>"; };
 		F6E52BEA1B203E93000356BB /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bolts.framework; sourceTree = "<group>"; };
@@ -172,6 +174,7 @@
 				F6E59CCB1B1D932A00035651 /* LoginViewController.swift */,
 				F6E52BEC1B20944B000356BB /* UserMapViewController.swift */,
 				F6E52BEE1B209476000356BB /* UserListViewController.swift */,
+				F6DD77DF1B26D1C100C9777D /* InformationPostingViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -322,6 +325,7 @@
 				F6E59CCC1B1D932A00035651 /* LoginViewController.swift in Sources */,
 				F6E59CF21B1DA65400035651 /* UDACITYConstants.swift in Sources */,
 				F6E59CF01B1DA5C600035651 /* UDACITYClient.swift in Sources */,
+				F6DD77E01B26D1C100C9777D /* InformationPostingViewController.swift in Sources */,
 				F6F204AF1B22C67800296413 /* PARSEClient.swift in Sources */,
 				F6F204B31B22C69600296413 /* PARSEConstants.swift in Sources */,
 				F6E59CCA1B1D932A00035651 /* AppDelegate.swift in Sources */,

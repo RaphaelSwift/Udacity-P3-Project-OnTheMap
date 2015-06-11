@@ -16,6 +16,12 @@ extension PARSEClient {
     
     struct Constants {
         
+        //MARK Student
+        
+        static let StudentFirstName = "Raph"
+        static let StudentLastName = "Ael"
+        static let StudentUniqueKey = "u20126152"
+        
         //MARK Keys
         
         static let ParseApplicationID = "QrX47CA9cyuGewLdsL7o5Eb8iug6Em8ye0dnAbIr"
@@ -37,10 +43,28 @@ extension PARSEClient {
         
     }
     
+    
+    //MARK: JSON Body Parameters
+    
+    struct JSONBodyParamaters {
+        
+        static let UniqueKey = "uniqueKey"
+        static let FirstName = "firstName"
+        static let LastName = "lastName"
+        static let MapString = "mapString"
+        static let MediaURL = "mediaURL"
+        static let Latitude = "latitude"
+        static let Longitude = "longitude"
+        
+        
+    }
+    
+    
     //MARK: JSON Response Keys
     
     struct JSONResponseKeys {
     
+        static let CreatedAt = "createdAt"
         static let FirstName = "firstName"
         static let LastName = "lastName"
         static let Latitude = "latitude"

@@ -9,6 +9,10 @@
 import Foundation
 
 class PARSEClient: NSObject {
+    
+    /* Students Data */
+    
+    var studentsInformation: [PARSEStudentInformation] = [PARSEStudentInformation]()
 
     /* Shared Session */
     var session: NSURLSession
@@ -29,7 +33,7 @@ class PARSEClient: NSObject {
         
         /* 2. Build the URL */
         
-        let urlString = Constants.BaseSecureURL + Methods.StudentLocations
+        let urlString = Constants.BaseSecureURL + method
         let url = NSURL(string: urlString)!
         
         /* 3. Configure the request */
@@ -61,7 +65,52 @@ class PARSEClient: NSObject {
         
     }
     
-    //Helper Functions : Given a raw JSON Data set, return an usable Foundation object
+    
+    //MARK: - POST
+    
+    func taskForPOSTMethod(method: String, jsonBodyParameters: [String: AnyObject], completionHandler: (result: AnyObject!, error: NSError?)->Void) -> NSURLSessionTask {
+        
+        /* 1. Set the parameters */
+        
+        /* 2. Build the URL */
+        let urlString = Constants.BaseSecureURL + method
+        let url = NSURL(string: urlString)!
+        
+        /* 3. Configure the request */
+        let request = NSMutableURLRequest(URL: url)
+        var jsonifyError: NSError? = nil
+        
+        request.HTTPMethod = "POST"
+        request.addValue(Constants.ParseApplicationID, forHTTPHeaderField: "X-Parse-Application-Id")
+        request.addValue(Constants.ParseRESTAPIKey, forHTTPHeaderField: "X-Parse-REST-API-Key")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        request.HTTPBody = NSJSONSerialization.dataWithJSONObject(jsonBodyParameters, options: nil, error: &jsonifyError)
+        
+        /* 4. Make the request */
+        let task = session.dataTaskWithRequest(request) { data, response, error in
+            
+            /* 5/6. Parse the data and use the data (happens in the completion handler) */
+            if let error = error {
+                println(error.localizedDescription)
+                completionHandler(result: nil, error: error)
+                
+            } else {
+                self.parseDataWithJSONWithCompletionHandler(data, completionHandler: completionHandler)
+                
+            }
+            
+        }
+        
+        /* 7. Start the request */
+        task.resume()
+        return task
+        
+    }
+    
+    //MARK: -  Helpers
+    
+    //Helper Function : Given a raw JSON Data set, return an usable Foundation object
     
     func parseDataWithJSONWithCompletionHandler (data: NSData!, completionHandler: (result: AnyObject!, error: NSError?)-> Void ) {
         
@@ -79,6 +128,9 @@ class PARSEClient: NSObject {
         
         
     }
+    
+    
+
     
     
     // Shared Instance

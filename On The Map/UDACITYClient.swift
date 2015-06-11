@@ -13,8 +13,9 @@ class UDACITYClient : NSObject {
     /* Shared session */
     var session: NSURLSession
     
-    
-    var sessionID: String? = nil
+    var userID: String? = nil
+    var userFirstName: String? = nil
+    var userLastName: String? = nil
 
     
     override init() {
@@ -22,7 +23,7 @@ class UDACITYClient : NSObject {
         super.init()
     }
     
-    // Mark: - POST
+    // MARK: - POST
     
     func taskForPOSTMethod(method: String, jsonBody: [String:[String:AnyObject]], completionHandler:(result: AnyObject!, error: NSError?) -> Void) -> NSURLSessionTask {
         
@@ -31,7 +32,7 @@ class UDACITYClient : NSObject {
         
         
         /* 2/3. Build the URL and configure the request */
-        let urlString = UDACITYClient.Constants.baseSecureURL + UDACITYClient.Methods.Session
+        let urlString = UDACITYClient.Constants.baseSecureURL + method
         let url = NSURL(string: urlString)!
         
         let request = NSMutableURLRequest(URL: url)
@@ -49,7 +50,6 @@ class UDACITYClient : NSObject {
             /* 5/6 Parse the data and use the data (happens in the complention handler) */
             if let error = downloadError {
                 println("unable to download data taskForPostMethod")
-                println(error)
                 completionHandler(result: nil, error: error)
             } else {
                 let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5 )) // Subset response data!
@@ -64,6 +64,94 @@ class UDACITYClient : NSObject {
         return task
     
  }
+    
+    //MARK: - GET
+    
+     //TODO: Add Get method to retrieve the user data
+    func taskForGETMethod(method: String, completionHandler: (result: AnyObject!, error: NSError?) -> Void ) -> NSURLSessionTask {
+        
+        /* 1. Set the parameters */
+        
+        /* 2/3. Build the URL and configure the request */
+        let urlString = Constants.baseSecureURL + method
+        let url = NSURL(string: urlString)!
+        
+        let request = NSURLRequest(URL: url)
+        
+        /* 4. Make the request */
+        let task = session.dataTaskWithRequest(request) { data, response, error in
+            
+            /* 5/6. Parse the data and use the data (happens in the completion handler) */
+            if let error = error {
+                completionHandler(result: nil, error: error)
+                
+            } else {
+                
+                let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5))
+                self.parseJSONWithCompletionHandler(newData, completionHandler: completionHandler)
+                
+            }
+            
+        }
+        
+    /* 7. Start the request */
+        task.resume()
+        
+        return task
+        
+    }
+    
+    //MARK: - DELETE
+    
+    func taskForDELETEMethod(method: String, completionHandler: (result: AnyObject!, error : NSError?) -> Void) -> NSURLSessionTask {
+        
+        /* 1. Set the parameters */
+        
+        /* 2. Build the url */
+        let urlString = UDACITYClient.Constants.baseSecureURL + method
+        let url = NSURL(string: urlString)!
+        
+        /* 3. Configure the request */
+        let request = NSMutableURLRequest(URL: url)
+        request.HTTPMethod = "DELETE"
+        
+        var xsrfCookie: NSHTTPCookie? = nil
+        let sharedCookieStorage = NSHTTPCookieStorage.sharedHTTPCookieStorage()
+        
+        for cookie in sharedCookieStorage.cookies as! [NSHTTPCookie] {
+            if cookie.name == "XSRF-TOKEN" { xsrfCookie = cookie }
+        }
+        
+        if let xsrfCookie = xsrfCookie {
+            request.addValue(xsrfCookie.value!, forHTTPHeaderField: "X-XSRF-Token")
+        }
+        
+        /* 4. Make the request */
+        
+        let task = session.dataTaskWithRequest(request) { data, response, downloadError in
+
+            
+            if let error = downloadError {
+                completionHandler(result: nil, error: error)
+                
+            } else {
+                
+                let newData = data.subdataWithRange(NSMakeRange(5, data.length - 5)) // Subset response data!
+                self.parseJSONWithCompletionHandler(newData, completionHandler: completionHandler)
+                
+            }
+         
+            
+        }
+        
+        /* 7. Start the request */
+        task.resume()
+        return task
+    }
+    
+    
+    //MARK: - Helpers
+    
 
     // Helper function : Given raw JSON  data set, return an usable Foundation object
     
@@ -73,7 +161,6 @@ class UDACITYClient : NSObject {
         
         
         if let parsedData = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &parsedError) as? [String:AnyObject] {
-            println(parsedData)
             
             if let error = parsedError {
                 completionHandler(result: nil, error: error)
@@ -84,6 +171,18 @@ class UDACITYClient : NSObject {
             
         } else {
             println("Could not parse data")
+
+        }
+        
+    }
+    
+    // Helper : Substitude the key for the value that is contained within the method name
+    
+    class func substituteKeyInMethod (method: String, key: String, value: String) -> String? {
+        if method.rangeOfString("<\(key)>") != nil {
+            return method.stringByReplacingOccurrencesOfString("<\(key)>", withString: value)
+        } else {
+            return nil
         }
         
     }

@@ -12,16 +12,18 @@ import FBSDKLoginKit
 class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     
+    @IBOutlet weak var udacityImageView: UIImageView!
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
     
     
     //MARK: - Lifecycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
         
         // Check if the user is already logged in, if yes, complete login to Udacity
         if FBSDKAccessToken.currentAccessToken() != nil  {
@@ -29,15 +31,26 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
 
         }
         
+
+        
+        // By default hides the activity indicator when it is stopped.
+        self.activityIndicator.hidesWhenStopped = true
+        
+
+    }
+
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(true)
+        
+        self.udacityImageView.image = UIImage(named: "Udacity")
+        
         // Create the Facebook Login button view and position it at bottom of the screen
         let loginView : FBSDKLoginButton = FBSDKLoginButton()
         self.view.addSubview(loginView)
         loginView.center = CGPointMake(self.view.center.x, self.view.frame.height - 40)
         loginView.delegate = self
         
-        // By default hides the activity indicator when it is stopped.
-        self.activityIndicator.hidesWhenStopped = true
-
     }
     
 
@@ -52,9 +65,12 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         
         loginToUdacityWithUdacityCredentials()
 
+
     }
 
     @IBAction func signUpToUdacityTouchUpInside() {
+        
+        UIApplication.sharedApplication().openURL(NSURL(string: "https://www.udacity.com/account/auth#!/signup")!)
  
     }
 
@@ -80,7 +96,7 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
                 println(error)
             } else {
                 if success {
-                    println("successfully logged to Udacity")
+                    
                     self.completeLogin()
                 }
             }
@@ -97,8 +113,8 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
         let token = FBSDKAccessToken.currentAccessToken().tokenString
         UDACITYClient.sharedInstance().createSessionWithFacebook(token) { success, error in
             if success {
-                println("successfully logged to Facebook")
                 self.completeLogin()
+                
             } else {
                 if let error = error {
                     if error == "TimedOut"
@@ -119,11 +135,32 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
     
     
     func completeLogin() {
-        dispatch_async(dispatch_get_main_queue()) {
-            let controller = self.storyboard?.instantiateViewControllerWithIdentifier("ManagerNavigationController") as! UINavigationController
-            self.presentViewController(controller, animated: true, completion: nil)
-        }
         
+        dispatch_async(dispatch_get_main_queue()) {
+        
+            
+            UDACITYClient.sharedInstance().getUserData() { success, error in
+                if success {
+                    
+                    dispatch_async(dispatch_get_main_queue()) {
+                
+                    self.activityIndicator.stopAnimating()
+                    
+                    let controller = self.storyboard?.instantiateViewControllerWithIdentifier("ManagerNavigationController") as! UINavigationController
+                    self.presentViewController(controller, animated: true, completion: nil)
+                        
+                    }
+                
+                } else {
+                    
+                    dispatch_async(dispatch_get_main_queue()) {
+                    self.displayUserDataAlert(error!)
+                        
+                    }
+                }
+                
+            }
+        }
     }
     
     
@@ -199,6 +236,18 @@ class LoginViewController: UIViewController, FBSDKLoginButtonDelegate {
             
         }
         
+    }
+    
+    
+    func displayUserDataAlert(error: String) {
+        
+        let alertController = UIAlertController(title: "Download Failed", message: error, preferredStyle: UIAlertControllerStyle.Alert)
+        
+        let actionOk = UIAlertAction(title: "OK", style: .Default, handler: nil)
+        
+        alertController.addAction(actionOk)
+        
+        self.presentViewController(alertController, animated: true, completion: nil)
     }
     
     //MARK: - Facebook FBSDKLoginButtonDelegate
